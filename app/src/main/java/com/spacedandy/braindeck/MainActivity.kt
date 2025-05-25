@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
                     MainMenuScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        onExit = { finish() }
                     )
                 }
             }
@@ -34,7 +35,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainMenuScreen(modifier: Modifier = Modifier) {
+fun MainMenuScreen(
+    modifier: Modifier = Modifier,
+    onExit: () -> Unit = {}
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -49,7 +53,7 @@ fun MainMenuScreen(modifier: Modifier = Modifier) {
         Button(onClick = { /* TODO: Acción jugar */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
             Text("Jugar")
         }
-        Button(onClick = { /* TODO: Acción salir */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
+        Button(onClick = { onExit() }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
             Text("Salir")
         }
     }
