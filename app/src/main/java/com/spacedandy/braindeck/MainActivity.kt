@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.spacedandy.braindeck.ui.theme.BraindeckTheme
 
+import android.content.Intent
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +28,9 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
+                        onCrearCarta = {
+                            startActivity(Intent(this, crearCartaActivity::class.java))
+                        },
                         onExit = { finish() }
                     )
                 }
@@ -37,6 +42,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainMenuScreen(
     modifier: Modifier = Modifier,
+    onCrearCarta: () -> Unit = {},
     onExit: () -> Unit = {}
 ) {
     Column(
@@ -44,7 +50,10 @@ fun MainMenuScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /* TODO: Acción crear carta */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
+        Button(
+            onClick = { onCrearCarta() },
+            modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)
+        ) {
             Text("Crear carta")
         }
         Button(onClick = { /* TODO: Acción ver mazos */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
