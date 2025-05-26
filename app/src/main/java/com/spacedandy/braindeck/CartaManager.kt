@@ -55,6 +55,11 @@ object CartaManager {
         return mazos[nombreMazo] ?: emptyList()
     }
 
+    // Reemplazar todas las cartas de un mazo con una nueva lista
+    fun reemplazarCartas(nombreMazo: String, nuevasCartas: MutableList<Carta>) {
+        mazos[nombreMazo] = nuevasCartas
+    }
+
     // Eliminar un mazo completo
     fun eliminarMazo(nombreMazo: String) {
         mazos.remove(nombreMazo)

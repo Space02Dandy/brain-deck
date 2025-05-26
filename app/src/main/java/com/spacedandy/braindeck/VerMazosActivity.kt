@@ -1,9 +1,9 @@
 package com.spacedandy.braindeck
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class VerMazosActivity : AppCompatActivity() {
@@ -17,16 +17,18 @@ class VerMazosActivity : AppCompatActivity() {
         CartaManager.cargar(this)
         val nombresMazos = CartaManager.obtenerNombresDeMazos()
 
-        // Mostrar en ListView
+        // Mostrar los mazos en el ListView
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, nombresMazos)
         listaMazos.adapter = adapter
 
-        // Mostrar mensaje al hacer clic en un mazo (puedes cambiar esto por abrir otra Activity)
+        // Al hacer clic en un mazo, abrir VerPreguntasActivity
         listaMazos.setOnItemClickListener { _, _, position, _ ->
             val nombreMazo = nombresMazos[position]
-            Toast.makeText(this, "Mazo seleccionado: $nombreMazo", Toast.LENGTH_SHORT).show()
 
-            // Aquí podrías abrir una nueva actividad para mostrar las cartas de ese mazo
+            val intent = Intent(this, VerPreguntasActivity::class.java).apply {
+                putExtra("mazo_nombre", nombreMazo)
+            }
+            startActivity(intent)
         }
     }
 }
