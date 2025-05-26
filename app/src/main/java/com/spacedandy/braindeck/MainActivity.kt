@@ -31,6 +31,9 @@ class MainActivity : ComponentActivity() {
                         onCrearCarta = {
                             startActivity(Intent(this, crearCartaActivity::class.java))
                         },
+                        onVerMazos = {
+                            startActivity(Intent(this, VerMazosActivity::class.java))
+                        },
                         onExit = { finish() }
                     )
                 }
@@ -43,6 +46,7 @@ class MainActivity : ComponentActivity() {
 fun MainMenuScreen(
     modifier: Modifier = Modifier,
     onCrearCarta: () -> Unit = {},
+    onVerMazos: () -> Unit = {},
     onExit: () -> Unit = {}
 ) {
     Column(
@@ -56,7 +60,10 @@ fun MainMenuScreen(
         ) {
             Text("Crear carta")
         }
-        Button(onClick = { /* TODO: Acción ver mazos */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
+        Button(
+            onClick = { onVerMazos() },
+            modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)
+        ) {
             Text("Ver mazos")
         }
         Button(onClick = { /* TODO: Acción jugar */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {

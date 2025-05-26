@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class crearCartaActivity : AppCompatActivity() {
@@ -66,5 +67,38 @@ class crearCartaActivity : AppCompatActivity() {
         layout.addView(guardarButton)
 
         setContentView(layout)
+
+        // Listener para guardar carta al hacer click
+        guardarButton.setOnClickListener {
+            val nombreMazo = mazoEditText.text.toString().trim()
+            val pregunta = preguntaEditText.text.toString().trim()
+            val respuesta1 = respuesta1EditText.text.toString().trim()
+            val respuesta2 = respuesta2EditText.text.toString().trim()
+            val respuesta3 = respuesta3EditText.text.toString().trim()
+            val respuesta4 = respuesta4EditText.text.toString().trim()
+
+            if(nombreMazo.isEmpty() || pregunta.isEmpty() || respuesta1.isEmpty()) {
+                Toast.makeText(this, "Completa al menos mazo, pregunta y respuesta correcta", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val respuestas = listOf(respuesta1, respuesta2, respuesta3, respuesta4).filter { it.isNotEmpty() }
+            val carta = Carta(pregunta, respuestas)
+
+            CartaManager.cargar(this)
+            CartaManager.agregarCarta(nombreMazo, carta)
+            CartaManager.guardar(this)
+
+            Toast.makeText(this, "Carta guardada correctamente", Toast.LENGTH_SHORT).show()
+
+            // Limpiar campos después de guardar
+            mazoEditText.text.clear()
+            preguntaEditText.text.clear()
+            respuesta1EditText.text.clear()
+            respuesta2EditText.text.clear()
+            respuesta3EditText.text.clear()
+            respuesta4EditText.text.clear()
+        }
     }
 }
+
