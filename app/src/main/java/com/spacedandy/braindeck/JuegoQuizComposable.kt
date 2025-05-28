@@ -16,50 +16,59 @@ fun JuegoQuiz(cartas: List<Carta>) {
     val carta = cartas[indiceActual]
     val respuestas = carta.respuestas ?: emptyList()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center // Centra todo el contenido dentro del Box
     ) {
-        Text(text = carta.pregunta, style = MaterialTheme.typography.headlineSmall)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.8f), // Ocupa el 80% del ancho para que no quede muy ancho
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = carta.pregunta,
+                style = MaterialTheme.typography.headlineSmall
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if (respuestas.isEmpty()) {
-            Text("Esta carta no tiene respuestas.", modifier = Modifier.padding(16.dp))
-        } else {
-            respuestas.shuffled().forEach { respuesta ->
-                Button(
-                    onClick = {
-                        respuestaSeleccionada = respuesta
-                        mostrarResultado = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                ) {
-                    Text(respuesta)
+            if (respuestas.isEmpty()) {
+                Text("Esta carta no tiene respuestas.", modifier = Modifier.padding(16.dp))
+            } else {
+                respuestas.shuffled().forEach { respuesta ->
+                    Button(
+                        onClick = {
+                            respuestaSeleccionada = respuesta
+                            mostrarResultado = true
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text(respuesta)
+                    }
                 }
-            }
 
-            if (mostrarResultado && respuestaSeleccionada != null) {
-                val esCorrecta = respuestaSeleccionada == carta.respuestas.firstOrNull()
-                Text(
-                    text = if (esCorrecta == true) "¡Correcto!" else "Incorrecto. La correcta era: ${carta.respuestas.firstOrNull() ?: "No disponible"}",
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                if (mostrarResultado && respuestaSeleccionada != null) {
+                    val correcta = carta.respuestas.firstOrNull()
+                    val esCorrecta = respuestaSeleccionada == correcta
 
-                Button(
-                    onClick = {
-                        respuestaSeleccionada = null
-                        mostrarResultado = false
-                        indiceActual = (indiceActual + 1) % cartas.size
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text("Siguiente")
+                    Text(
+                        text = if (esCorrecta) "¡Correcto!" else "Incorrecto. La correcta era: $correcta",
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            respuestaSeleccionada = null
+                            mostrarResultado = false
+                            indiceActual = (indiceActual + 1) % cartas.size
+                        },
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text("Siguiente")
+                    }
                 }
             }
         }
