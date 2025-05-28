@@ -35,8 +35,9 @@ class MainActivity : ComponentActivity() {
                         onVerMazos = {
                             startActivity(Intent(context, VerMazosActivity::class.java))
                         },
+                        // Aquí se cambia para lanzar la pantalla de selección de mazo
                         onJugar = {
-                            startActivity(Intent(context, JugarActivity::class.java))
+                            startActivity(Intent(context, SeleccionarMazoActivity::class.java))
                         },
                         onExit = { finish() }
                     )
@@ -54,8 +55,6 @@ fun MainMenuScreen(
     onJugar: () -> Unit = {},
     onExit: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -95,3 +94,4 @@ fun MainMenuScreenPreview() {
         MainMenuScreen()
     }
 }
+

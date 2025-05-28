@@ -15,16 +15,25 @@ class JugarActivity : ComponentActivity() {
 
         CartaManager.cargar(this) // Cargar datos de cartas y mazos
 
-        val nombresDeMazos = CartaManager.obtenerNombresDeMazos()
-        // Obtiene todas las cartas de todos los mazos
-        val cartas = nombresDeMazos.flatMap { mazo -> CartaManager.obtenerCartasDeMazo(mazo) }
+        // Obtener el nombre del mazo desde el Intent
+        val nombreMazo = intent.getStringExtra("nombreMazo")
+
+        // Obtener solo las cartas del mazo seleccionado
+        val cartas = if (nombreMazo != null) {
+            CartaManager.obtenerCartasDeMazo(nombreMazo)
+        } else {
+            emptyList()
+        }
 
         setContent {
             BraindeckTheme {
                 if (cartas.isNotEmpty()) {
                     JuegoQuiz(cartas = cartas)
                 } else {
-                    Text("No hay cartas disponibles", modifier = Modifier.padding(16.dp))
+                    Text(
+                        "No hay cartas disponibles para el mazo seleccionado",
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
         }
