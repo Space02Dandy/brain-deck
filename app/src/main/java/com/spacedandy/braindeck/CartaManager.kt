@@ -14,14 +14,21 @@ object CartaManager {
     // Mapa que guarda los mazos con sus cartas
     private var mazos: MutableMap<String, MutableList<Carta>> = mutableMapOf()
 
-    // Cargar datos desde SharedPreferences
+    // Cargar datos desde SharedPreferences con filtro para cartas inválidas
     fun cargar(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val json = prefs.getString(KEY_CARTAS, null)
 
         if (json != null) {
             val tipo = object : TypeToken<MutableMap<String, MutableList<Carta>>>() {}.type
-            mazos = gson.fromJson(json, tipo)
+            val mazosCargados: MutableMap<String, MutableList<Carta>> = gson.fromJson(json, tipo)
+
+            // Filtramos cartas con respuestas nulas o vacías
+            mazos = mazosCargados.mapValues { (_, cartas) ->
+                cartas.filter {
+                    it.pregunta.isNotBlank() && !it.respuestas.isNullOrEmpty()
+                }.toMutableList()
+            }.toMutableMap()
         }
     }
 
@@ -50,9 +57,9 @@ object CartaManager {
         return mazos.keys.toList()
     }
 
-    // Obtener cartas de un mazo específico
+    // Obtener cartas de un mazo específico con filtro adicional (por si acaso)
     fun obtenerCartasDeMazo(nombreMazo: String): List<Carta> {
-        return mazos[nombreMazo] ?: emptyList()
+        return mazos[nombreMazo]?.filter { !it.respuestas.isNullOrEmpty() } ?: emptyList()
     }
 
     // Reemplazar todas las cartas de un mazo con una nueva lista

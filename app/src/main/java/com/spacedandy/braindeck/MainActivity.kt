@@ -11,10 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.spacedandy.braindeck.ui.theme.BraindeckTheme
-
 import android.content.Intent
 
 class MainActivity : ComponentActivity() {
@@ -23,16 +23,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BraindeckTheme {
+                val context = this@MainActivity
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MainMenuScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
                         onCrearCarta = {
-                            startActivity(Intent(this, crearCartaActivity::class.java))
+                            startActivity(Intent(context, crearCartaActivity::class.java))
                         },
                         onVerMazos = {
-                            startActivity(Intent(this, VerMazosActivity::class.java))
+                            startActivity(Intent(context, VerMazosActivity::class.java))
+                        },
+                        onJugar = {
+                            startActivity(Intent(context, JugarActivity::class.java))
                         },
                         onExit = { finish() }
                     )
@@ -47,8 +51,11 @@ fun MainMenuScreen(
     modifier: Modifier = Modifier,
     onCrearCarta: () -> Unit = {},
     onVerMazos: () -> Unit = {},
+    onJugar: () -> Unit = {},
     onExit: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -66,10 +73,16 @@ fun MainMenuScreen(
         ) {
             Text("Ver mazos")
         }
-        Button(onClick = { /* TODO: Acción jugar */ }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
+        Button(
+            onClick = { onJugar() },
+            modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)
+        ) {
             Text("Jugar")
         }
-        Button(onClick = { onExit() }, modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)) {
+        Button(
+            onClick = { onExit() },
+            modifier = Modifier.fillMaxWidth(0.7f).padding(8.dp)
+        ) {
             Text("Salir")
         }
     }
