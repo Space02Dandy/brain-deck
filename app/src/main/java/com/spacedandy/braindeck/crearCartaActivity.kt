@@ -28,7 +28,7 @@ class crearCartaActivity : AppCompatActivity() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    bottomMargin = 32 // Más separación entre campos
+                    bottomMargin = 32
                 }
             }
         }
@@ -47,7 +47,6 @@ class crearCartaActivity : AppCompatActivity() {
         layout.addView(respuesta3EditText)
         layout.addView(respuesta4EditText)
 
-        // Espacio flexible para empujar el botón hacia abajo
         val space = LinearLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
@@ -68,7 +67,6 @@ class crearCartaActivity : AppCompatActivity() {
 
         setContentView(layout)
 
-        // Listener para guardar carta al hacer click
         guardarButton.setOnClickListener {
             val nombreMazo = mazoEditText.text.toString().trim()
             val pregunta = preguntaEditText.text.toString().trim()
@@ -77,7 +75,7 @@ class crearCartaActivity : AppCompatActivity() {
             val respuesta3 = respuesta3EditText.text.toString().trim()
             val respuesta4 = respuesta4EditText.text.toString().trim()
 
-            if(nombreMazo.isEmpty() || pregunta.isEmpty() || respuesta1.isEmpty()) {
+            if (nombreMazo.isEmpty() || pregunta.isEmpty() || respuesta1.isEmpty()) {
                 Toast.makeText(this, "Completa al menos mazo, pregunta y respuesta correcta", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -91,7 +89,7 @@ class crearCartaActivity : AppCompatActivity() {
 
             Toast.makeText(this, "Carta guardada correctamente", Toast.LENGTH_SHORT).show()
 
-            // Limpiar campos después de guardar
+            // Limpiar campos para nueva entrada
             mazoEditText.text.clear()
             preguntaEditText.text.clear()
             respuesta1EditText.text.clear()
@@ -101,4 +99,3 @@ class crearCartaActivity : AppCompatActivity() {
         }
     }
 }
-
