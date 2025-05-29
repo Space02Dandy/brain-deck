@@ -45,7 +45,7 @@ fun JuegoQuiz(cartas: List<Carta>) {
                         .crossfade(true)
                         .build(),
                     contentDescription = "Imagen de la carta",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     placeholder = painterResource(id = R.drawable.placeholder),
                     error = painterResource(id = R.drawable.error_image),
                     modifier = Modifier

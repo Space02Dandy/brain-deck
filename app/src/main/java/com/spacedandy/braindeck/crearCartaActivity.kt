@@ -118,7 +118,7 @@ class crearCartaActivity : AppCompatActivity() {
                 topMargin = 16
                 bottomMargin = 32
             }
-            scaleType = ImageView.ScaleType.CENTER_CROP
+            scaleType = ImageView.ScaleType.FIT_CENTER  // Cambiar aquí
         }
         layout.addView(vistaImagen)
 
