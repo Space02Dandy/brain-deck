@@ -28,7 +28,7 @@ class JugarActivity : ComponentActivity() {
         setContent {
             BraindeckTheme {
                 if (cartas.isNotEmpty()) {
-                    JuegoQuiz(cartas = cartas)
+                    JuegoQuiz(cartas = cartas, onSalir = { finish() })
                 } else {
                     Text(
                         "No hay cartas disponibles para el mazo seleccionado",
@@ -39,3 +39,4 @@ class JugarActivity : ComponentActivity() {
         }
     }
 }
+

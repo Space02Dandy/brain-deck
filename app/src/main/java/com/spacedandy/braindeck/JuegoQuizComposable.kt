@@ -15,13 +15,61 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
 @Composable
-fun JuegoQuiz(cartas: List<Carta>) {
+fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
     var indiceActual by remember { mutableStateOf(0) }
     var mostrarResultado by remember { mutableStateOf(false) }
     var respuestaSeleccionada by remember { mutableStateOf<String?>(null) }
+    var totalCorrectas by remember { mutableStateOf(0) }
+    var juegoFinalizado by remember { mutableStateOf(false) }
+    var respuestaYaProcesada by remember { mutableStateOf(false) }
+
+    if (juegoFinalizado) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "🎉 Has completado el mazo 🎉",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            Text(
+                text = "Respondiste correctamente $totalCorrectas de ${cartas.size} preguntas.",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            Button(
+                onClick = {
+                    indiceActual = 0
+                    totalCorrectas = 0
+                    juegoFinalizado = false
+                    respuestaYaProcesada = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text("🔄 Intentar de nuevo")
+            }
+
+            OutlinedButton(
+                onClick = { onSalir() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("⬅️ Regresar")
+            }
+        }
+        return
+    }
 
     val carta = cartas[indiceActual]
-    val respuestas = carta.respuestas ?: emptyList()
+    val respuestasBarajadas = remember(indiceActual) {
+        carta.respuestas?.shuffled() ?: emptyList()
+    }
 
     Box(
         modifier = Modifier
@@ -61,25 +109,34 @@ fun JuegoQuiz(cartas: List<Carta>) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            if (respuestas.isEmpty()) {
+            if (respuestasBarajadas.isEmpty()) {
                 Text("Esta carta no tiene respuestas.", modifier = Modifier.padding(16.dp))
             } else {
-                respuestas.shuffled().forEach { respuesta ->
+                respuestasBarajadas.forEach { respuesta ->
                     Button(
                         onClick = {
-                            respuestaSeleccionada = respuesta
-                            mostrarResultado = true
+                            if (!mostrarResultado) {
+                                respuestaSeleccionada = respuesta
+                                mostrarResultado = true
+                                respuestaYaProcesada = false
+                            }
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !mostrarResultado
                     ) {
                         Text(respuesta)
                     }
                 }
 
                 if (mostrarResultado && respuestaSeleccionada != null) {
-                    val esCorrecta = respuestaSeleccionada == carta.respuestas.firstOrNull()
+                    val esCorrecta = respuestaSeleccionada == carta.respuestas?.firstOrNull()
+                    if (esCorrecta && !respuestaYaProcesada) {
+                        totalCorrectas++
+                        respuestaYaProcesada = true
+                    }
+
                     Text(
-                        text = if (esCorrecta) "✅ ¡Correcto!" else "❌ Incorrecto. La correcta era: ${carta.respuestas.firstOrNull() ?: "No disponible"}",
+                        text = if (esCorrecta) "✅ ¡Correcto!" else "❌ Incorrecto. La correcta era: ${carta.respuestas?.firstOrNull() ?: "No disponible"}",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(top = 16.dp)
                     )
@@ -88,7 +145,12 @@ fun JuegoQuiz(cartas: List<Carta>) {
                         onClick = {
                             respuestaSeleccionada = null
                             mostrarResultado = false
-                            indiceActual = (indiceActual + 1) % cartas.size
+                            respuestaYaProcesada = false
+                            if (indiceActual < cartas.lastIndex) {
+                                indiceActual++
+                            } else {
+                                juegoFinalizado = true
+                            }
                         },
                         modifier = Modifier.padding(top = 12.dp)
                     ) {
@@ -99,4 +161,6 @@ fun JuegoQuiz(cartas: List<Carta>) {
         }
     }
 }
+
+
 
