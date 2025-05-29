@@ -97,7 +97,13 @@ class crearCartaActivity : AppCompatActivity() {
         val botonImagen = Button(this).apply {
             text = "📷 Seleccionar Imagen"
             setOnClickListener {
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                // Cambiado a ACTION_OPEN_DOCUMENT para obtener permisos persistentes
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "image/*"
+                    flags = Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                }
                 startActivityForResult(intent, PICK_IMAGE_REQUEST)
             }
         }
@@ -202,8 +208,16 @@ class crearCartaActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            imagenUriSeleccionada = data?.data
-            vistaImagen.setImageURI(imagenUriSeleccionada)
+            data?.data?.let { uri ->
+                // Pedir permiso persistente para leer esta URI después
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                imagenUriSeleccionada = uri
+                vistaImagen.setImageURI(imagenUriSeleccionada)
+            }
         }
     }
 }
+

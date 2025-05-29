@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.activity)
     testImplementation(libs.junit)
