@@ -28,12 +28,13 @@ class EditarCartaActivity : AppCompatActivity() {
         val pregunta = intent.getStringExtra("pregunta") ?: ""
         val respuestas = intent.getStringArrayListExtra("respuestas") ?: arrayListOf("", "", "", "")
         val posicion = intent.getIntExtra("posicion", -1)
+        val nombreMazo = intent.getStringExtra("mazo_nombre") ?: ""
 
         preguntaEditText.setText(pregunta)
-        if (respuestas.size > 0) respuesta1EditText.setText(respuestas.getOrNull(0))
-        if (respuestas.size > 1) respuesta2EditText.setText(respuestas.getOrNull(1))
-        if (respuestas.size > 2) respuesta3EditText.setText(respuestas.getOrNull(2))
-        if (respuestas.size > 3) respuesta4EditText.setText(respuestas.getOrNull(3))
+        if (respuestas.size > 0) respuesta1EditText.setText(respuestas.getOrNull(0) ?: "")
+        if (respuestas.size > 1) respuesta2EditText.setText(respuestas.getOrNull(1) ?: "")
+        if (respuestas.size > 2) respuesta3EditText.setText(respuestas.getOrNull(2) ?: "")
+        if (respuestas.size > 3) respuesta4EditText.setText(respuestas.getOrNull(3) ?: "")
 
         botonGuardar.setOnClickListener {
             val nuevaPregunta = preguntaEditText.text.toString().trim()
@@ -44,10 +45,22 @@ class EditarCartaActivity : AppCompatActivity() {
                 respuesta4EditText.text.toString().trim()
             ).filter { it.isNotEmpty() }
 
+            // Validación básica
+            if (nuevaPregunta.isEmpty()) {
+                preguntaEditText.error = "La pregunta no puede estar vacía"
+                return@setOnClickListener
+            }
+
+            if (nuevasRespuestas.isEmpty()) {
+                respuesta1EditText.error = "Debe haber al menos una respuesta"
+                return@setOnClickListener
+            }
+
             val resultIntent = intent.apply {
                 putExtra("nuevaPregunta", nuevaPregunta)
                 putStringArrayListExtra("nuevasRespuestas", ArrayList(nuevasRespuestas))
                 putExtra("posicion", posicion)
+                putExtra("mazo_nombre", nombreMazo)
             }
 
             setResult(Activity.RESULT_OK, resultIntent)
