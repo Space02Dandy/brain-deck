@@ -82,3 +82,4 @@ object CartaManager {
         mazos.clear()
     }
 }
+

@@ -1,17 +1,22 @@
 package com.spacedandy.braindeck
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
 class crearCartaActivity : AppCompatActivity() {
+
+    private var imagenUriSeleccionada: Uri? = null
+    private val PICK_IMAGE_REQUEST = 1
+    private lateinit var vistaImagen: ImageView  // Declaración global
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,19 +28,17 @@ class crearCartaActivity : AppCompatActivity() {
             )
             setPadding(40, 40, 40, 40)
 
-            // Fondo con gradiente azul a blanco
             val gradientBackground = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(
-                    Color.parseColor("#1E88E5"), // Azul vibrante
-                    Color.parseColor("#E3F2FD"), // Azul muy claro
+                    Color.parseColor("#1E88E5"),
+                    Color.parseColor("#E3F2FD"),
                     Color.WHITE
                 )
             )
             background = gradientBackground
         }
 
-        // Título llamativo
         val titulo = TextView(this).apply {
             text = " CREAR NUEVA CARTA "
             textSize = 24f
@@ -44,20 +47,13 @@ class crearCartaActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 40
-            }
+            ).apply { bottomMargin = 40 }
 
-            // Fondo del título con gradiente rojo
-            val titleBackground = GradientDrawable().apply {
-                colors = intArrayOf(
-                    Color.parseColor("#E53935"),
-                    Color.parseColor("#D32F2F")
-                )
+            background = GradientDrawable().apply {
+                colors = intArrayOf(Color.parseColor("#E53935"), Color.parseColor("#D32F2F"))
                 cornerRadius = 20f
                 setStroke(3, Color.WHITE)
             }
-            background = titleBackground
             setPadding(32, 20, 32, 20)
             elevation = 8f
         }
@@ -69,25 +65,18 @@ class crearCartaActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = 24
-                }
+                ).apply { bottomMargin = 24 }
 
-                // Colores llamativos para los campos
-                setTextColor(Color.parseColor("#0D47A1")) // Azul muy oscuro
-                setHintTextColor(Color.parseColor("#42A5F5")) // Azul medio
+                setTextColor(Color.parseColor("#0D47A1"))
+                setHintTextColor(Color.parseColor("#42A5F5"))
                 textSize = 16f
-
-                // Diseño súper llamativo con gradiente y sombra
-                val drawable = GradientDrawable().apply {
-                    // Gradiente sutil de blanco a azul muy claro
+                background = GradientDrawable().apply {
                     colors = intArrayOf(Color.WHITE, Color.parseColor("#F3F9FF"))
                     cornerRadius = 20f
-                    setStroke(4, Color.parseColor("#1976D2")) // Borde azul grueso
+                    setStroke(4, Color.parseColor("#1976D2"))
                 }
-                background = drawable
                 setPadding(32, 28, 32, 28)
-                elevation = 6f // Sombra para profundidad
+                elevation = 6f
             }
         }
 
@@ -104,6 +93,28 @@ class crearCartaActivity : AppCompatActivity() {
         layout.addView(respuesta2EditText)
         layout.addView(respuesta3EditText)
         layout.addView(respuesta4EditText)
+
+        val botonImagen = Button(this).apply {
+            text = "📷 Seleccionar Imagen"
+            setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(intent, PICK_IMAGE_REQUEST)
+            }
+        }
+        layout.addView(botonImagen)
+
+        // Vista previa de la imagen
+        vistaImagen = ImageView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                400
+            ).apply {
+                topMargin = 16
+                bottomMargin = 32
+            }
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+        layout.addView(vistaImagen)
 
         val space = LinearLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(
@@ -122,26 +133,20 @@ class crearCartaActivity : AppCompatActivity() {
                 topMargin = 32
             }
 
-            // Botón súper llamativo
             setTextColor(Color.WHITE)
             textSize = 18f
             setAllCaps(false)
-
-            val buttonDrawable = GradientDrawable().apply {
-                // Gradiente rojo vibrante
+            background = GradientDrawable().apply {
                 colors = intArrayOf(
-                    Color.parseColor("#FF5722"), // Naranja-rojo
-                    Color.parseColor("#D32F2F"), // Rojo
-                    Color.parseColor("#B71C1C")  // Rojo oscuro
+                    Color.parseColor("#FF5722"),
+                    Color.parseColor("#D32F2F"),
+                    Color.parseColor("#B71C1C")
                 )
                 cornerRadius = 25f
-                setStroke(3, Color.WHITE) // Borde blanco
+                setStroke(3, Color.WHITE)
             }
-            background = buttonDrawable
             setPadding(40, 32, 40, 32)
-            elevation = 10f // Sombra más pronunciada
-
-            // Efecto de presión (simulado)
+            elevation = 10f
             setOnTouchListener { v, event ->
                 when (event.action) {
                     android.view.MotionEvent.ACTION_DOWN -> {
@@ -174,7 +179,8 @@ class crearCartaActivity : AppCompatActivity() {
             }
 
             val respuestas = listOf(respuesta1, respuesta2, respuesta3, respuesta4).filter { it.isNotEmpty() }
-            val carta = Carta(pregunta, respuestas)
+            val imagenUri = imagenUriSeleccionada?.toString()
+            val carta = Carta(pregunta, respuestas, imagenUri)
 
             CartaManager.cargar(this)
             CartaManager.agregarCarta(nombreMazo, carta)
@@ -182,13 +188,22 @@ class crearCartaActivity : AppCompatActivity() {
 
             Toast.makeText(this, "🎉 ¡Carta guardada exitosamente! 🎉", Toast.LENGTH_SHORT).show()
 
-            // Limpiar campos para nueva entrada
             mazoEditText.text.clear()
             preguntaEditText.text.clear()
             respuesta1EditText.text.clear()
             respuesta2EditText.text.clear()
             respuesta3EditText.text.clear()
             respuesta4EditText.text.clear()
+            imagenUriSeleccionada = null
+            vistaImagen.setImageDrawable(null)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            imagenUriSeleccionada = data?.data
+            vistaImagen.setImageURI(imagenUriSeleccionada)
         }
     }
 }
