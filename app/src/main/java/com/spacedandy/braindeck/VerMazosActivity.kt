@@ -1,299 +1,266 @@
 package com.spacedandy.braindeck
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.spacedandy.braindeck.ui.theme.BraindeckTheme
 
-class VerMazosActivity : AppCompatActivity() {
+class VerMazosActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Crear layout principal con gradiente
-        val mainLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            setPadding(40, 40, 40, 40)
-
-            // Fondo con gradiente azul a blanco
-            val gradientBackground = GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(
-                    Color.parseColor("#1E88E5"), // Azul vibrante
-                    Color.parseColor("#E3F2FD"), // Azul muy claro
-                    Color.WHITE
-                )
-            )
-            background = gradientBackground
-        }
-
-        // Título súper llamativo
-        val titulo = TextView(this).apply {
-            text = " VER TODOS LOS MAZOS "
-            textSize = 22f
-            setTextColor(Color.WHITE)
-            gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 40
-            }
-
-            // Fondo del título con gradiente rojo
-            val titleBackground = GradientDrawable().apply {
-                colors = intArrayOf(
-                    Color.parseColor("#E53935"),
-                    Color.parseColor("#D32F2F")
-                )
-                cornerRadius = 20f
-                setStroke(3, Color.WHITE)
-            }
-            background = titleBackground
-            setPadding(32, 24, 32, 24)
-            elevation = 12f
-        }
-        mainLayout.addView(titulo)
-
-        // ListView personalizado
-        val listaMazos = ListView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-
-            // Estilo del ListView
-            divider = null
-            setPadding(0, 16, 0, 16)
-            clipToPadding = false
-
-            // Fondo transparente para que se vea el gradiente
-            setBackgroundColor(Color.TRANSPARENT)
-        }
-        mainLayout.addView(listaMazos)
-
-        setContentView(mainLayout)
-
         // Cargar mazos desde SharedPreferences
         CartaManager.cargar(this)
-        val nombresMazos = CartaManager.obtenerNombresDeMazos()
 
-        // Crear adaptador personalizado súper llamativo
-        val adapter = object : ArrayAdapter<String>(this, 0, nombresMazos) {
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val nombreMazo = getItem(position) ?: ""
+        setContent {
+            BraindeckTheme {
+                val mazos = remember { CartaManager.obtenerNombresDeMazos() }
 
-                // Crear tarjeta personalizada para cada mazo
-                val cardLayout = LinearLayout(this@VerMazosActivity).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        bottomMargin = 16
-                    }
-                    setPadding(24, 20, 24, 20)
-                    gravity = Gravity.CENTER_VERTICAL
-
-                    // Fondo con gradiente y sombra
-                    val cardBackground = GradientDrawable().apply {
-                        colors = intArrayOf(Color.WHITE, Color.parseColor("#F3F9FF"))
-                        cornerRadius = 20f
-                        setStroke(4, Color.parseColor("#1976D2"))
-                    }
-                    background = cardBackground
-                    elevation = 8f
-
-                    // Efecto de clic
-                    isClickable = true
-                    isFocusable = true
-                }
-
-                // Icono llamativo
-                val iconContainer = FrameLayout(this@VerMazosActivity).apply {
-                    layoutParams = LinearLayout.LayoutParams(60, 60).apply {
-                        rightMargin = 20
-                    }
-
-                    val iconBackground = GradientDrawable().apply {
-                        colors = intArrayOf(
-                            Color.parseColor("#42A5F5"),
-                            Color.parseColor("#1976D2")
+                // Fondo con gradiente azul-blanco (similar al original pero más suave)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.White,
+                                    Color(0xFFFFCCCC), // Rojo claro como el original
+                                    Color(0xFFFFE6E6)  // Rojo muy claro
+                                )
+                            )
                         )
-                        cornerRadius = 15f
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Título con colores del diseño original
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .shadow(12.dp, RoundedCornerShape(20.dp)),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.Transparent
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(
+                                                Color.Blue,      // Azul del texto original
+                                                Color(0xFF1976D2) // Azul más oscuro
+                                            )
+                                        )
+                                    )
+                                    .padding(24.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "📚 VER MAZOS 📚",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // Lista de mazos con diseño que respeta los colores originales
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(mazos) { mazo ->
+                                MazoViewCard(
+                                    nombreMazo = mazo,
+                                    onClick = {
+                                        val intent = Intent(this@VerMazosActivity, VerPreguntasActivity::class.java)
+                                        intent.putExtra("mazo_nombre", mazo)
+                                        startActivity(intent)
+                                    }
+                                )
+                            }
+                        }
+
+                        if (mazos.isEmpty()) {
+                            Spacer(modifier = Modifier.height(40.dp))
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .shadow(8.dp, RoundedCornerShape(16.dp)),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFFFCCCC) // Rojo claro del diseño original
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(24.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "📝",
+                                        fontSize = 48.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "¡No hay mazos disponibles!",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.Blue, // Azul del texto original
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = "Crea tu primer mazo para comenzar",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF1976D2),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
                     }
-                    background = iconBackground
                 }
-
-                val iconText = TextView(this@VerMazosActivity).apply {
-                    text = "🎴"
-                    textSize = 28f
-                    gravity = Gravity.CENTER
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
-                }
-                iconContainer.addView(iconText)
-                cardLayout.addView(iconContainer)
-
-                // Contenido del mazo
-                val textContainer = LinearLayout(this@VerMazosActivity).apply {
-                    orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-                    )
-                }
-
-                val nombreText = TextView(this@VerMazosActivity).apply {
-                    text = nombreMazo
-                    textSize = 18f
-                    setTextColor(Color.parseColor("#0D47A1"))
-                    setTypeface(null, android.graphics.Typeface.BOLD)
-                }
-                textContainer.addView(nombreText)
-
-                val subtituloText = TextView(this@VerMazosActivity).apply {
-                    text = "Toca para ver preguntas"
-                    textSize = 12f
-                    setTextColor(Color.parseColor("#42A5F5"))
-                }
-                textContainer.addView(subtituloText)
-                cardLayout.addView(textContainer)
-
-                // Flecha indicadora
-                val arrowContainer = FrameLayout(this@VerMazosActivity).apply {
-                    layoutParams = LinearLayout.LayoutParams(48, 48)
-
-                    val arrowBackground = GradientDrawable().apply {
-                        colors = intArrayOf(
-                            Color.parseColor("#FF5722"),
-                            Color.parseColor("#D32F2F")
-                        )
-                        cornerRadius = 12f
-                    }
-                    background = arrowBackground
-                }
-
-                val arrowText = TextView(this@VerMazosActivity).apply {
-                    text = "▶️"
-                    textSize = 16f
-                    gravity = Gravity.CENTER
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
-                }
-                arrowContainer.addView(arrowText)
-                cardLayout.addView(arrowContainer)
-
-                return cardLayout
             }
         }
+    }
+}
 
-        listaMazos.adapter = adapter
+@Composable
+fun MazoViewCard(
+    nombreMazo: String,
+    onClick: () -> Unit
+) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = tween(100)
+    )
 
-        // Al hacer clic en un mazo, abrir VerPreguntasActivity con animación
-        listaMazos.setOnItemClickListener { _, view, position, _ ->
-            // Efecto visual de clic
-            view.animate()
-                .scaleX(0.95f)
-                .scaleY(0.95f)
-                .setDuration(100)
-                .withEndAction {
-                    view.animate()
-                        .scaleX(1.0f)
-                        .scaleY(1.0f)
-                        .setDuration(100)
-                        .start()
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale)
+            .shadow(10.dp, RoundedCornerShape(20.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    onClick()
                 }
-                .start()
-
-            val nombreMazo = nombresMazos[position]
-            val intent = Intent(this, VerPreguntasActivity::class.java).apply {
-                putExtra("mazo_nombre", nombreMazo)
-            }
-            startActivity(intent)
-        }
-
-        // Mostrar mensaje si no hay mazos
-        if (nombresMazos.isEmpty()) {
-            val emptyContainer = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
+            ),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFFFCCCC), // Rojo claro del diseño original
+                            Color.White
+                        )
+                    )
                 )
-            }
-
-            val emptyCard = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(32, 32, 32, 32)
+                .padding(20.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Icono con colores azules
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    Color.Blue,        // Azul del texto original
+                                    Color(0xFF1976D2)  // Azul más oscuro
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "📋",
+                        fontSize = 24.sp
+                    )
                 }
-                setPadding(40, 40, 40, 40)
 
-                val emptyBackground = GradientDrawable().apply {
-                    setColor(Color.parseColor("#FFF3E0"))
-                    cornerRadius = 20f
-                    setStroke(3, Color.parseColor("#FF9800"))
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Nombre del mazo con colores originales
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = nombreMazo,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Blue // Azul del diseño original
+                    )
+                    Text(
+                        text = "Toca para ver preguntas",
+                        fontSize = 12.sp,
+                        color = Color(0xFF1976D2)
+                    )
                 }
-                background = emptyBackground
-                elevation = 8f
-            }
 
-            val emptyIcon = TextView(this).apply {
-                text = "📚"
-                textSize = 64f
-                gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = 16
+                // Flecha con colores rojos (divisoria original)
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color.Red,         // Rojo de las divisorias originales
+                                    Color(0xFFD32F2F)  // Rojo más oscuro
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "👁️",
+                        fontSize = 16.sp
+                    )
                 }
             }
-            emptyCard.addView(emptyIcon)
-
-            val emptyTitle = TextView(this).apply {
-                text = "¡No hay mazos disponibles!"
-                textSize = 20f
-                setTextColor(Color.parseColor("#E65100"))
-                gravity = Gravity.CENTER
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = 8
-                }
-            }
-            emptyCard.addView(emptyTitle)
-
-            val emptySubtitle = TextView(this).apply {
-                text = "Crea tu primer mazo para comenzar"
-                textSize = 14f
-                setTextColor(Color.parseColor("#BF360C"))
-                gravity = Gravity.CENTER
-            }
-            emptyCard.addView(emptySubtitle)
-
-            emptyContainer.addView(emptyCard)
-            mainLayout.removeView(listaMazos)
-            mainLayout.addView(emptyContainer)
         }
     }
 }
