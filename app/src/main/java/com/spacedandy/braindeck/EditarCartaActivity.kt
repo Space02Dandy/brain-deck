@@ -135,6 +135,31 @@ class EditarCartaActivity : AppCompatActivity() {
         }
         layout.addView(cambiarImagenButton)
 
+        val borrarImagenButton = Button(this).apply {
+            text = "BORRAR IMAGEN"
+            setTextColor(Color.WHITE)
+            textSize = 16f
+            background = GradientDrawable().apply {
+                colors = intArrayOf(Color.parseColor("#EF5350"), Color.parseColor("#D32F2F"))
+                cornerRadius = 20f
+                setStroke(2, Color.WHITE)
+            }
+            setPadding(30, 20, 30, 20)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 40
+            }
+
+            setOnClickListener {
+                imagenUri = null
+                imagenView.setImageDrawable(null)
+                Toast.makeText(this@EditarCartaActivity, "🗑 Imagen borrada", Toast.LENGTH_SHORT).show()
+            }
+        }
+        layout.addView(borrarImagenButton)
+
         val space = Space(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f

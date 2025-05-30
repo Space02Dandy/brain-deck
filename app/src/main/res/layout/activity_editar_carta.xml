@@ -38,6 +38,8 @@
             android:layout_height="wrap_content"
             android:hint="Respuesta 4" />
 
+
+
         <Button
             android:id="@+id/botonGuardar"
             android:layout_width="match_parent"

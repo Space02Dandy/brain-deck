@@ -15,7 +15,8 @@ class crearCartaActivity : AppCompatActivity() {
 
     private var imagenUriSeleccionada: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
-    private lateinit var vistaImagen: ImageView  // Declaración global
+    private lateinit var vistaImagen: ImageView
+    private lateinit var botonBorrarImagen: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +29,7 @@ class crearCartaActivity : AppCompatActivity() {
             )
             setPadding(40, 40, 40, 40)
 
-            val gradientBackground = GradientDrawable(
+            background = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(
                     Color.parseColor("#1E88E5"),
@@ -36,7 +37,6 @@ class crearCartaActivity : AppCompatActivity() {
                     Color.WHITE
                 )
             )
-            background = gradientBackground
         }
 
         val titulo = TextView(this).apply {
@@ -97,7 +97,6 @@ class crearCartaActivity : AppCompatActivity() {
         val botonImagen = Button(this).apply {
             text = "📷 Seleccionar Imagen"
             setOnClickListener {
-                // Cambiado a ACTION_OPEN_DOCUMENT para obtener permisos persistentes
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "image/*"
@@ -109,7 +108,35 @@ class crearCartaActivity : AppCompatActivity() {
         }
         layout.addView(botonImagen)
 
-        // Vista previa de la imagen
+        // Botón para borrar imagen (se mostrará solo si hay imagen seleccionada)
+        botonBorrarImagen = Button(this).apply {
+            text = "🗑️ Borrar Imagen"
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                bottomMargin = 24
+            }
+            visibility = Button.GONE // Oculto por defecto
+
+            setTextColor(Color.WHITE)
+            background = GradientDrawable().apply {
+                colors = intArrayOf(Color.parseColor("#78909C"), Color.parseColor("#546E7A"))
+                cornerRadius = 20f
+                setStroke(2, Color.WHITE)
+            }
+            setPadding(32, 20, 32, 20)
+            elevation = 6f
+
+            setOnClickListener {
+                imagenUriSeleccionada = null
+                vistaImagen.setImageDrawable(null)
+                visibility = Button.GONE
+            }
+        }
+        layout.addView(botonBorrarImagen)
+
         vistaImagen = ImageView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -118,7 +145,7 @@ class crearCartaActivity : AppCompatActivity() {
                 topMargin = 16
                 bottomMargin = 32
             }
-            scaleType = ImageView.ScaleType.FIT_CENTER  // Cambiar aquí
+            scaleType = ImageView.ScaleType.FIT_CENTER
         }
         layout.addView(vistaImagen)
 
@@ -202,6 +229,7 @@ class crearCartaActivity : AppCompatActivity() {
             respuesta4EditText.text.clear()
             imagenUriSeleccionada = null
             vistaImagen.setImageDrawable(null)
+            botonBorrarImagen.visibility = Button.GONE
         }
     }
 
@@ -209,15 +237,17 @@ class crearCartaActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             data?.data?.let { uri ->
-                // Pedir permiso persistente para leer esta URI después
                 contentResolver.takePersistableUriPermission(
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
                 imagenUriSeleccionada = uri
                 vistaImagen.setImageURI(imagenUriSeleccionada)
+                botonBorrarImagen.visibility = Button.VISIBLE
             }
         }
     }
 }
+
+
 
