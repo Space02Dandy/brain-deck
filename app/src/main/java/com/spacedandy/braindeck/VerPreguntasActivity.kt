@@ -57,11 +57,16 @@ class VerPreguntasActivity : AppCompatActivity() {
     private fun editarCarta(carta: Carta, posicion: Int) {
         val intent = Intent(this, EditarCartaActivity::class.java).apply {
             putExtra("pregunta", carta.pregunta)
-            putStringArrayListExtra("respuestas", ArrayList(carta.respuestas)) // importante
+            putStringArrayListExtra("respuestas", ArrayList(carta.respuestas))
             putExtra("posicion", posicion)
+            putExtra("mazo_nombre", mazo)
+            carta.imagenUri?.let { uri ->
+                putExtra("imagenUriString", uri)
+            }
         }
         startActivityForResult(intent, REQUEST_EDITAR_CARTA)
     }
+
 
     private fun eliminarCarta(posicion: Int) {
         cartas.removeAt(posicion)
@@ -85,7 +90,7 @@ class VerPreguntasActivity : AppCompatActivity() {
                 CartaManager.reemplazarCartas(mazo, cartas)
                 CartaManager.guardar(this)
                 mostrarPreguntas()
-                Toast.makeText(this, "Carta editada", Toast.LENGTH_SHORT).show()
+
             }
 
         }
