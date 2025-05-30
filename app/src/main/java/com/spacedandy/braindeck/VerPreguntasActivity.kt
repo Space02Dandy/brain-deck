@@ -79,12 +79,15 @@ class VerPreguntasActivity : AppCompatActivity() {
             val posicion = data.getIntExtra("posicion", -1)
 
             if (posicion in cartas.indices) {
-                cartas[posicion] = Carta(nuevaPregunta, nuevasRespuestas)
+                val imagenUriString = data.getStringExtra("imagenUriString")
+                val nuevaCarta = Carta(nuevaPregunta, nuevasRespuestas, imagenUriString)
+                cartas[posicion] = nuevaCarta
                 CartaManager.reemplazarCartas(mazo, cartas)
                 CartaManager.guardar(this)
                 mostrarPreguntas()
                 Toast.makeText(this, "Carta editada", Toast.LENGTH_SHORT).show()
             }
+
         }
     }
 }
