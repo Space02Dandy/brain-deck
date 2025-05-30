@@ -2,14 +2,20 @@ package com.spacedandy.braindeck
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -27,6 +33,15 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFE3F2FD), // Azul claro
+                            Color(0xFF2196F3), // Azul medio
+                            Color(0xFF1976D2)  // Azul oscuro
+                        )
+                    )
+                )
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -34,11 +49,14 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
             Text(
                 text = "🎉 Has completado el mazo 🎉",
                 style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             Text(
                 text = "Respondiste correctamente $totalCorrectas de ${cartas.size} preguntas.",
                 style = MaterialTheme.typography.bodyLarge,
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
@@ -49,6 +67,10 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                     juegoFinalizado = false
                     respuestaYaProcesada = false
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFD32F2F), // Rojo
+                    contentColor = Color.White
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
@@ -56,8 +78,12 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                 Text("🔄 Intentar de nuevo")
             }
 
-            OutlinedButton(
+            Button(
                 onClick = { onSalir() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("⬅️ Regresar")
@@ -74,6 +100,15 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFF3F7FF), // Blanco con tinte azul
+                        Color(0xFFE3F2FD)  // Azul muy claro
+                    )
+                )
+            )
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -87,30 +122,51 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                 val uri = Uri.parse(uriStr)
                 Log.d("JuegoQuiz", "Mostrando imagen URI: $uriStr")
 
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(uri)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Imagen de la carta",
-                    contentScale = ContentScale.Fit,
-                    placeholder = painterResource(id = R.drawable.placeholder),
-                    error = painterResource(id = R.drawable.error_image),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(bottom = 8.dp)
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(uri)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Imagen de la carta",
+                        contentScale = ContentScale.Fit,
+                        placeholder = painterResource(id = R.drawable.placeholder),
+                        error = painterResource(id = R.drawable.error_image),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    )
+                }
+            }
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFE3F2FD) // Azul claro
+                ),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Text(
+                    text = carta.pregunta,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color(0xFF1976D2), // Azul oscuro
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
 
-            Text(
-                text = carta.pregunta,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
             if (respuestasBarajadas.isEmpty()) {
-                Text("Esta carta no tiene respuestas.", modifier = Modifier.padding(16.dp))
+                Text(
+                    "Esta carta no tiene respuestas.",
+                    color = Color(0xFFD32F2F), // Rojo
+                    modifier = Modifier.padding(16.dp)
+                )
             } else {
                 respuestasBarajadas.forEach { respuesta ->
                     Button(
@@ -121,6 +177,10 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                                 respuestaYaProcesada = false
                             }
                         },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF1976D2), // Azul
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !mostrarResultado
                     ) {
@@ -135,11 +195,21 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                         respuestaYaProcesada = true
                     }
 
-                    Text(
-                        text = if (esCorrecta) "✅ ¡Correcto!" else "❌ Incorrecto. La correcta era: ${carta.respuestas?.firstOrNull() ?: "No disponible"}",
-                        style = MaterialTheme.typography.bodyLarge,
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (esCorrecta) Color(0xFFE8F5E8) else Color(0xFFFFEBEE)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.padding(top = 16.dp)
-                    )
+                    ) {
+                        Text(
+                            text = if (esCorrecta) "✅ ¡Correcto!" else "❌ Incorrecto. La correcta era: ${carta.respuestas?.firstOrNull() ?: "No disponible"}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (esCorrecta) Color(0xFF2E7D32) else Color(0xFFD32F2F),
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
 
                     Button(
                         onClick = {
@@ -152,6 +222,10 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
                                 juegoFinalizado = true
                             }
                         },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFD32F2F), // Rojo
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier.padding(top = 12.dp)
                     ) {
                         Text("Siguiente")
@@ -161,6 +235,3 @@ fun JuegoQuiz(cartas: List<Carta>, onSalir: () -> Unit) {
         }
     }
 }
-
-
-
